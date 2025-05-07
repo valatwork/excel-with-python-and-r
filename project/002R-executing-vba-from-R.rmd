@@ -1,0 +1,49 @@
+---
+title: "Executing VBA from R"
+output: html_notebook
+---
+
+## Install RDCOMClient (Windows only):
+
+```{r}
+install.packages("RDCOMClient", repos = "http://www.omegahat.net/R")
+```
+
+## Load the library
+
+```{r}
+library(RDCOMClient)
+```
+
+```{r}
+f_path <- "C:/Lab/Repos/excel-with-python-and-r/project/data/"
+f_name <- "mult_by_rand.xlsm"
+
+f <- paste0(f_path, f_name)
+```
+
+```{r}
+# Make Excel application object
+xl_app <- COMCreate("Excel.Application")
+xl_wb <- xl_app$Workbooks()$Open(f)
+xl_app[['Visible']] <- TRUE
+```
+
+
+```{r}
+macro_name <- "MultiplyByRandom"
+```
+
+
+```{r}
+# Run the macro
+xl_app$Run(macro_name)
+# Save and Quit
+xl_wb$close(TRUE); xl_app$Quit()
+```
+
+
+```{r}
+
+```
+
