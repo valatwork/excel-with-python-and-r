@@ -1,0 +1,80 @@
+---
+title: "Pivot tables with R"
+output: html_notebook
+---
+
+Load the data
+```{r}
+df <- as.data.frame(UCBAdmissions)
+```
+
+Create a contingency table:
+```{r}
+xtabs(Freq ~ Gender + Admit, df)
+```
+
+Check if the `gt` package is installed:
+```{r}
+# The gt package
+if (!require(gt)) {
+ install.packages("gt", dependencies = TRUE)
+}
+```
+
+Load the dplyr, tibble, and gt packages:
+```{r}
+library(dplyr)
+library(tibble)
+library(gt)
+```
+
+Load the mtcars dataset:
+```{r}
+tab <- mtcars |>
+ rownames_to_column() |>
+ arrange(factor(cyl), mpg) |>
+ group_by(cyl) |>
+ slice(1:3) |>
+ gt()
+```
+
+Add the performance spanner:
+```{r}
+tab <- tab |>
+ tab_spanner(
+ label = "Performance",
+ columns = c(mpg, disp, hp, drat, wt, qsec)
+ )
+```
+
+Add the specs spanner:
+```{r}
+tab <- tab |>
+ tab_spanner(
+ label = "Specs",
+ columns = c(vs, am, gear, carb)
+ )
+```
+
+Set the table title:
+```{r}
+tab <- tab |>
+ tab_header(
+ title = md("The Cars of **mtcars**"),
+ subtitle = "These are some fine automobiles"
+ )
+tab
+```
+
+Create a pivot table using `tidyquant`:
+```{r}
+# Load the tidyquant library
+library(tidyquant)
+library(purrr)
+# Create a pivot table
+pivot_table(.data = iris,
+ .rows = ~ Species,
+ .values = c(~ mean(Sepal.Length),
+ ~ mean(Sepal.Width))) |>
+set_names("Species","Mean_Sepal_Length","Mean_Sepal_Width")
+```

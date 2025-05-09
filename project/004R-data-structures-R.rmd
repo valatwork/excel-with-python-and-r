@@ -1,0 +1,181 @@
+---
+title: "Data Structures in R"
+output: html_notebook
+---
+
+Load the required libraries:
+
+```{r}
+# For importing and exploring data
+library(tidyverse)
+# For reading in Excel files
+library(readxl)
+# For descriptive statistics
+library(psych)
+# For writing data to Excel
+library(writexl)
+```
+
+Load the data:
+```{r}
+districts <- read.csv("project/data/districts.csv")
+```
+```{r}
+star <- read_xlsx("project/data/star.xlsx")
+```
+
+Take a look at the data:
+```{r}
+View(star)
+```
+```{r}
+glimpse(star)
+```
+```{r}
+summary(star)
+```
+```{r}
+describe(star)
+```
+```{r}
+head(star)
+```
+
+## Column-wise operations
+
+Select columns:
+```{r}
+select(star, tmathssk, treadssk, schidkn)
+```
+
+Drop columns:
+```{r}
+select(star, -tmathssk, -treadssk, -schidkn)
+```
+
+Pass all unwanted columns into a vector, then drop it:
+```{r}
+select(star, -c(tmathssk, treadssk, schidkn))
+```
+
+Select everything between two columns:
+```{r}
+star <- select(star, tmathssk:totexpk)
+```
+
+Create a column by combining reading and math scores:
+```{r}
+star <- mutate(star, combscores = treadssk + tmathssk)
+head(star)
+```
+
+Rename a column:
+```{r}
+star <- rename(star, ttl_score = combscores)
+head(star)
+```
+
+## Row-wise operations
+
+Sorting rows:
+```{r}
+arrange(star, classk, treadssk)
+```
+
+To sort in descending order, use the `desc()` function:
+```{r}
+arrange(star, desc(classk), treadssk)
+```
+
+Filter rows:
+```{r}
+filter(star, classk == 'small.class')
+```
+
+Filter with conditions:
+```{r}
+filter(star, treadssk >= 500)
+```
+
+Filter with multiple conditions:
+```{r}
+filter(star, classk == 'small.class' & treadssk >= 500)
+```
+
+## Aggregating and joining data
+
+```{r}
+star_grouped <- group_by(star, classk)
+head(star_grouped)
+```
+
+Let's summarize the data:
+```{r}
+summarize(star_grouped, avg_math = mean(tmathssk))
+```
+
+## Combining datasets
+
+```{r}
+districts <- read.csv("project/data/districts.csv")
+head(districts)
+```
+
+```{r}
+star <- read_xlsx("project/data/star.xlsx")
+head(star)
+```
+
+We’ll provide the “base” table first (star) and then the “lookup” table (districts). The function will look for and return a match in districts for every record in star, or return NA if no match is found
+
+```{r}
+left_join(select(star, schidkn, tmathssk, treadssk), districts)
+```
+
+Group the data by class type
+```{r}
+star_grouped <- group_by(star, classk)
+star_avg_reading <- summarize(star_grouped, avg_reading = mean(treadssk))
+```
+```{r}
+star_avg_reading_sorted <- arrange(star_avg_reading, desc(avg_reading))
+star_avg_reading_sorted
+```
+
+Let's recreate the previous steps using the pipe operator:
+```{r}
+star %>%
+  group_by(classk) %>%
+  summarize(avg_reading = mean(treadssk)) %>%
+  arrange(desc(avg_reading))
+```
+
+Reshape the data using `tidyr`:
+```{r}
+star_pivot <- star %>%
+                select(c(schidkn, treadssk, tmathssk)) %>%
+                mutate(id = row_number())
+```
+
+```{r}
+star_long <- star_pivot %>%
+                pivot_longer(cols = c(tmathssk, treadssk),
+                             values_to = "score", names_to = "test_type")
+head(star_long)
+```
+
+```{r}
+star_long <- star_long %>%
+                mutate(test_type = recode(test_type,
+                                          tmathssk = "math",
+                                          treadssk = "reading"))
+
+distinct(star_long, test_type)
+```
+
+Widen it back:
+```{r}
+star_wide <- star_long %>%
+                pivot_wider(values_from = 'score', names_from = 'test_type')
+head(star_wide)
+```
