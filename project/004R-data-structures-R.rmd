@@ -23,8 +23,7 @@ districts <- read.csv("project/data/districts.csv")
 ```{r}
 star <- read_xlsx("project/data/star.xlsx")
 ```
-
-Take a look at the data:
+Look at the data:
 ```{r}
 View(star)
 ```
