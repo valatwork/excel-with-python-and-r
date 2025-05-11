@@ -1,0 +1,386 @@
+---
+title: "Workout 1"
+output: html_notebook
+---
+
+## 1
+
+Create a series of 10 elements, random integers from 70 to 100, representing scores on a monthly exam. Set the index to be the month names, starting in September and ending in June.
+
+With this series, write code to answer the following questions:
+- What is the student’s average test score for the entire year?
+- What is the student’s average test score during the first half of the year (i.e., the first five months)?
+- What is the student’s average test score during the second half of the year?
+- Did the students improve their performance in the second half? If so, by how much?
+
+```{r}
+# Load necessary library
+library(dplyr)
+# Create a series of 10 random integers from 70 to 100
+set.seed(123) # For reproducibility
+months <- c("September", "October", "November", "December", "January", "February", "March", "April", "May", "June")
+scores <- sample(70:100, 10)
+# Create a data frame
+scores_df <- data.frame(Month = months, Score = scores)
+
+# Print the data frame
+print(scores_df)
+```
+
+Calculate the average test score for the entire year, first half, and second half:
+```{r}
+# Calculate average scores
+average_score <- mean(scores_df$Score)
+first_half_average <- mean(scores_df$Score[1:5])
+second_half_average <- mean(scores_df$Score[6:10])
+difference <- second_half_average - first_half_average
+# Print results
+cat("Average score for the entire year:", average_score, "\n")
+cat("Average score for the first half of the year:", first_half_average, "\n")
+cat("Average score for the second half of the year:", second_half_average, "\n")
+cat("Improvement in performance in the second half:", difference, "\n")
+```
+
+- In which month did the student perform best?
+- What were the student’s five highest scores?
+- Round the student’s scores to the nearest 10.
+
+```{r}
+# Find the month with the best performance
+best_month <- scores_df$Month[which.max(scores_df$Score)]
+best_score <- max(scores_df$Score)
+# Find the five highest scores
+highest_scores <- sort(scores_df$Score, decreasing = TRUE)[1:5]
+# Round scores to the nearest 10
+rounded_scores <- round(scores_df$Score, -1)
+# Print results
+cat("Best month:", best_month, "with score:", best_score, "\n")
+cat("Five highest scores:", highest_scores, "\n")
+cat("Rounded scores:", rounded_scores, "\n")
+```
+
+## 2
+
+Generate 10 test scores between 40 and 60, again using an index starting with September and ending with June. Find the mean of the scores and add the difference between the mean and 80 to each of the scores.
+```{r}
+months <- c("September", "October", "November", "December", "January", "February", "March", "April", "May", "June")
+# Create a series of 10 random integers from 40 to 60
+scores2 <- sample(40:60, 10)
+# Create a data frame
+scores2_df <- data.frame(Month = months, Score = scores2)
+# Print the data frame
+print(scores2_df)
+```
+
+Calculate the mean of the scores and add the difference between the mean and 80 to each score:
+```{r}
+# Calculate mean score
+mean_score2 <- mean(scores2_df$Score)
+# Calculate difference from 80
+difference2 <- 80 - mean_score2
+# Add difference to each score
+adjusted_scores2 <- scores2_df$Score + difference2
+# Print results
+cat("Mean score:", mean_score2, "\n")
+cat("Difference from 80:", difference2, "\n")
+cat("Adjusted scores:", adjusted_scores2, "\n")
+```
+
+## 3
+
+Generate 10 random integers in the range 0 to 100
+
+```{r}
+# Create a series of 10 random integers from 0 to 100
+scores3 <- sample(0:100, 10)
+```
+Create a series containing those numbers’ tens digits.
+```{r}
+# Create a series containing the tens digits
+tens_digits <- scores3 %/% 10
+# Print results
+cat("Original scores:", scores3, "\n")
+cat("Tens digits:", tens_digits, "\n")
+```
+
+Create a new series with 10 floating-point values between 0 and 1,000. Find the numbers whose integer component (i.e., ignoring any fractional part) are even.
+
+```{r}
+s <- runif(10, 0, 1000)
+# Find the integer components that are even
+even_integers <- s[as.integer(s) %% 2 == 0]
+s
+even_integers
+```
+
+## 4
+
+Generate a series of 100,000 floats in a normal distribution with a mean of 0 and a standard deviation of 100.
+```{r}
+# Generate a series of 100,000 floats in a normal distribution
+normal_series <- rnorm(100000, mean = 0, sd = 100)
+# Print the first few values
+head(normal_series)
+```
+
+Get the descriptive statistics of the series
+```{r}
+# Get descriptive statistics
+summary(normal_series)
+```
+
+Replace the minimum value with five times the maximum value.
+
+```{r}
+# Replace the minimum value with five times the maximum value
+min_value <- min(normal_series)
+max_value <- max(normal_series)
+normal_series[normal_series == min_value] <- 5 * max_value
+```
+
+Get the descriptive statistics of the series again to see the changes.
+```{r}
+summary(normal_series)
+```
+
+Demonstrate that 68%, 95%, and 99.7% of the values in s are indeed within one, two, and three standard distributions of the mean.
+```{r}
+# Calculate mean and standard deviation once
+mean_value <- mean(normal_series)
+sd_value <- sd(normal_series)
+
+# Define a function to calculate proportion within n standard deviations
+calc_proportion <- function(data, n_sd, mean_val, sd_val) {
+  # Using mean() on a logical vector is more efficient than sum()/length()
+  mean(data >= mean_val - n_sd * sd_val & data <= mean_val + n_sd * sd_val)
+}
+
+# Calculate proportions for different standard deviation ranges
+sd_ranges <- c(1, 2, 3)
+expected <- c(0.68, 0.95, 0.997)  # Theoretical values from empirical rule
+proportions <- sapply(sd_ranges, function(n) calc_proportion(normal_series, n, mean_value, sd_value))
+
+# Print results with expected values for comparison
+for (i in seq_along(sd_ranges)) {
+  cat(sprintf("Proportion within %d SD: %.4f (Expected: %.3f, Difference: %.4f)\n",
+              sd_ranges[i], proportions[i], expected[i], proportions[i] - expected[i]))
+}
+```
+
+Calculate the mean of numbers greater than s.mean(). Then calculate the mean of numbers less than s.mean(). Is the average of these two numbers the same as s.mean()?
+
+```{r}
+# Calculate mean of numbers greater than mean
+mean_greater <- mean(normal_series[normal_series > mean_value])
+# Calculate mean of numbers less than mean
+mean_less <- mean(normal_series[normal_series < mean_value])
+# Check if the average of these two numbers is the same as mean_value
+is_same <- (mean_greater + mean_less) / 2 == mean_value
+# Print results
+cat("Mean of numbers greater than mean:", mean_greater, "\n")
+cat("Mean of numbers less than mean:", mean_less, "\n")
+cat("Is the average of these two numbers the same as mean_value?", is_same, "\n")
+```
+
+What is the mean of the numbers beyond three standard deviations?
+```{r}
+# Calculate mean of numbers beyond three standard deviations
+mean_beyond_3sd <- mean(normal_series[normal_series < mean_value - 3 * sd_value | normal_series > mean_value + 3 * sd_value])
+# Print result
+cat("Mean of numbers beyond three standard deviations:", mean_beyond_3sd, "\n")
+```
+
+## 5
+
+Create a series of 28 temperature readings, representing four seven-day weeks, randomly generated from a normal distribution with a mean of 20 and a standard deviation of 5, rounded to the nearest integer. Use the days of the week as the index.
+```{r}
+days <- c("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+temps <- round(rnorm(28, mean = 20, sd = 5), 0)
+temps_df <- data.frame(Day = rep(days, 4), Temp = temps)
+temps_df
+```
+
+Mean of the temperatures on Mondays:
+
+```{r}
+mean_temp_mon <- round(mean(temps_df$Temp[temps_df$Day == "Mon"]), 0)
+mean_temp_mon
+```
+
+Mean for all days of the week:
+```{r}
+mean_temp <- aggregate(temps_df$Temp, by = list(temps_df$Day), FUN = mean)
+mean_temp <- round(mean_temp[, 2], 0)
+mean_temp
+```
+
+Weekend mean:
+```{r}
+mean_temp_weekend <- round(mean(temps_df$Temp[temps_df$Day %in% c("Sat", "Sun")]), 0)
+mean_temp_weekend
+```
+
+How many times is the change in temperature from the previous day greater than 2 degrees?
+```{r}
+temps_df$Temp_change <- c(NA, diff(temps_df$Temp))
+count_greater_than_2 <- sum(temps_df$Temp_change > 2, na.rm = TRUE)
+count_greater_than_2
+```
+
+What are the two most common temperatures in our data set, and how often does each appear?
+```{r}
+# Find the two most common temperatures
+temp_freq <- table(temps_df$Temp)
+most_common_temps <- sort(temp_freq, decreasing = TRUE)[1:2]
+most_common_temps
+```
+
+## 6
+
+Load the data from `project/data/taxi-passenger-count.csv`
+```{r}
+# Load necessary library
+library(readr)
+# Load the data
+taxi_data <- read_csv("project/data/taxi-passenger-count.csv")
+# Print the first few rows of the data
+head(taxi_data)
+```
+
+Count how many times each passenger count appears in the data set. The data has only one unnamed column
+```{r}
+count_passenger <- table(taxi_data)
+# Print the counts
+print(count_passenger)
+```
+
+What percentage of taxi rides had only one passenger versus the (theoretical) maximum of six passengers.
+```{r}
+one_passenger_count <- sum(taxi_data == 1)
+total_count <- nrow(taxi_data)
+percentage_one_passenger <- (one_passenger_count / total_count) * 100
+max_passenger_count <- sum(taxi_data == 6)
+percentage_max_passenger <- (max_passenger_count / total_count) * 100
+# Print results
+cat("Percentage of rides with one passenger:", percentage_one_passenger, "%\n")
+cat("Percentage of rides with maximum passengers (6):", percentage_max_passenger, "%\n")
+```
+
+Given these numbers, would more people benefit from smaller taxis that can take only one or two passengers or larger taxis that can take five or six passengers?
+
+```{r}
+# Calculate the total number of rides with 1 or 2 passengers
+one_or_two_passenger_count <- sum(taxi_data == 1 | taxi_data == 2)
+# Calculate the total number of rides with 5 or 6 passengers
+five_or_six_passenger_count <- sum(taxi_data == 5 | taxi_data == 6)
+# Calculate the percentage of rides with 1 or 2 passengers
+percentage_one_or_two_passenger <- (one_or_two_passenger_count / total_count) * 100
+# Calculate the percentage of rides with 5 or 6 passengers
+percentage_five_or_six_passenger <- (five_or_six_passenger_count / total_count) * 100
+# Print results
+cat("Percentage of rides with 1 or 2 passengers:", percentage_one_or_two_passenger, "%\n")
+cat("Percentage of rides with 5 or 6 passengers:", percentage_five_or_six_passenger, "%\n")
+# Conclusion
+if (percentage_one_or_two_passenger > percentage_five_or_six_passenger) {
+  cat("More people would benefit from smaller taxis that can take only one or two passengers.\n")
+} else {
+  cat("More people would benefit from larger taxis that can take five or six passengers.\n")
+}
+```
+
+## 7
+
+```{r}
+taxi_distance <- read_csv("project/data/taxi-distance.csv")
+# Print the first few rows of the data
+head(taxi_distance)
+```
+
+Create another series containing category names rather than numbers based on these criteria:
+- Short, <= 2 miles
+- Medium, > 2 miles but <= 10 miles
+- Long, > 10 miles
+```{r}
+# First check the column names in the dataframe
+names(taxi_distance)
+
+# Then create categories using the correct column name
+# Assuming the distance column is the first column
+taxi_distance$Category <- cut(
+  taxi_distance[[1]],  # Using the first column
+  breaks = c(-Inf, 2, 10, Inf),
+  labels = c("Short", "Medium", "Long")
+)
+
+# Alternative if the column has a different name
+# Replace "actual_column_name" with the actual column name from names(taxi_distance)
+# taxi_distance$Category <- cut(
+#   taxi_distance$actual_column_name,
+#   breaks = c(-Inf, 2, 10, Inf),
+#   labels = c("Short", "Medium", "Long")
+# )
+
+# Show the first few rows of the result
+head(taxi_distance)
+
+# Count records in each category
+table(taxi_distance$Category)
+```
+
+Visualize the distribution of the distances using a histogram.
+
+```{r}
+# Load necessary library
+library(ggplot2)
+# Create a histogram of the distances
+ggplot(taxi_distance, aes(x = taxi_distance[[1]])) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black", alpha = 0.7) +
+  labs(title = "Distribution of Taxi Distances", x = "Distance (miles)", y = "Frequency") +
+  theme_minimal()
+```
+
+How many short, medium, and long trips were there for trips that had only one passenger? Note that the data for passenger count and trip length is from the same data set, meaning the indexes are the same.
+
+```{r}
+# Load necessary library
+library(readr)
+
+# Load the data
+passengers <- read_csv("project/data/taxi-passenger-count.csv")
+distances <- read_csv("project/data/taxi-distance.csv")
+
+# Create a new data frame with the columns we want
+# Use first column from each dataframe regardless of column name
+combined_data <- data.frame(
+  Passenger_Count = unlist(passengers[,1]),
+  Distance = unlist(distances[,1])
+)
+
+# Create categories based on distance
+combined_data$Category <- cut(
+  combined_data$Distance,
+  breaks = c(-Inf, 2, 10, Inf),
+  labels = c("Short", "Medium", "Long")
+)
+
+# Filter for trips with only one passenger
+one_passenger_data <- combined_data[combined_data$Passenger_Count == 1, ]
+
+# Count trips in each category
+category_counts <- table(one_passenger_data$Category)
+
+# Print the results
+print(category_counts)
+```
+```{r}
+# Calculate percentages
+category_percentages <- prop.table(category_counts) * 100
+
+# Create a visualization of the distribution
+library(ggplot2)
+ggplot(one_passenger_data, aes(x = Category)) +
+  geom_bar(fill = "steelblue") +
+  labs(title = "Distribution of Trip Distances for Single-Passenger Rides",
+       x = "Distance Category",
+       y = "Count")
+```
