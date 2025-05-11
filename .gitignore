@@ -166,3 +166,4 @@ uv.lock
 # Other file types
 *.xml
 *.toml
+/ignore/
