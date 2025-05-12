@@ -1,6 +1,6 @@
 ---
 title: "Workout 1"
-output: html_notebook
+output: github_document
 ---
 
 ## 1
