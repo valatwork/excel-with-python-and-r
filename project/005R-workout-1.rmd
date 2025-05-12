@@ -1,6 +1,11 @@
 ---
 title: "Workout 1"
-output: github_document
+output:
+  github_document:
+        df_print: paged
+        toc: true
+        toc_depth: 2
+        number_sections: true
 ---
 
 ## 1
@@ -242,7 +247,7 @@ Load the data from `project/data/taxi-passenger-count.csv`
 # Load necessary library
 library(readr)
 # Load the data
-taxi_data <- read_csv("project/data/taxi-passenger-count.csv")
+taxi_data <- read_csv("data/taxi-passenger-count.csv")
 # Print the first few rows of the data
 head(taxi_data)
 ```
@@ -291,7 +296,7 @@ if (percentage_one_or_two_passenger > percentage_five_or_six_passenger) {
 ## 7
 
 ```{r}
-taxi_distance <- read_csv("project/data/taxi-distance.csv")
+taxi_distance <- read_csv("data/taxi-distance.csv")
 # Print the first few rows of the data
 head(taxi_distance)
 ```
@@ -346,8 +351,8 @@ How many short, medium, and long trips were there for trips that had only one pa
 library(readr)
 
 # Load the data
-passengers <- read_csv("project/data/taxi-passenger-count.csv")
-distances <- read_csv("project/data/taxi-distance.csv")
+passengers <- read_csv("data/taxi-passenger-count.csv")
+distances <- read_csv("data/taxi-distance.csv")
 
 # Create a new data frame with the columns we want
 # Use first column from each dataframe regardless of column name
