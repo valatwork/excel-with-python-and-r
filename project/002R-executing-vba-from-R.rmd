@@ -42,8 +42,3 @@ xl_app$Run(macro_name)
 xl_wb$close(TRUE); xl_app$Quit()
 ```
 
-
-```{r}
-
-```
-
