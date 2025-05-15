@@ -21,7 +21,7 @@ jobs:
 
     - name: Install R packages
       run: |
-        Rscript -e 'install.packages(c("rmarkdown", "knitr", "readr", "ggplot2, "tidyverse", "dplyr", "readxl", "psych", "writexl", "gt", "tibble", "tidyquant", "purrr", "RDCOMClient", "janitor"))'
+        Rscript -e 'install.packages(c("rmarkdown", "knitr", "readr", "ggplot2", "tidyverse", "dplyr", "readxl", "psych", "writexl", "gt", "tibble", "tidyquant", "purrr", "RDCOMClient", "janitor"))'
 
     - name: Render R Markdown files
       run: |
