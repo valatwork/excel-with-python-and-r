@@ -137,8 +137,10 @@ def get_ci(data, confidence, method='norm'):
                            't' for t-distribution (small samples)
 
     Returns:
-    --------
-    tuple: (lower_bound, upper_bound) of the confidence interval
+    upper_ci : float
+        Upper bound of the confidence interval
+    lower_ci : float
+        Lower bound of the confidence interval
     """
     # Input validation
     if not 0 < confidence < 1:
